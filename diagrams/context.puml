@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+
+Person(user, "Пользователь", "Использует приложение для управления умными устройствами")
+System(smart_home, "Smart Home API", "Апи для управления умными устройствами")
+System(remote_devices, "Remote Devices", "Датчики и исполнительные устройства")
+
+Rel(user, smart_home, "получает информацию о датчиках, их статусе и управляет ими. настраивает сценарии")
+Rel(user, remote_devices, "Создает, обновляет и удаляет датчики")
+Rel(remote_devices, smart_home, "Регистрация  устройств")
+Rel(smart_home, remote_devices, "Получает данные из датчиков и исполнительных устройств")
+@enduml

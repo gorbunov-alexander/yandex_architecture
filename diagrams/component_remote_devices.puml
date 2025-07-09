@@ -1,0 +1,17 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+System_Boundary(c1, "Remote Devices"){
+Component(devices_api, "Devices", "Go", "Управление набором устройств")
+}
+
+Component_Ext(api, "Smart Home API", "Go", "API для управления умными устройствами")
+Component_Ext(telemetry, "Telemetry", "Go", "обработка телеметрии")
+
+Rel(devices_api, api, "Получение информации о подключенных устройствах", "JSON/HTTP")
+Rel(devices_api, telemetry, "Сохранение телеметрии", "JSON/HTTP")
+
+ComponentDb(db, "DB", "PostgreSQL", "База данных для сохранения данных о подключенных устройствах")
+
+Rel(devices_api, db, "Сохраняет и получает данные", "SQL/tcp")
+@enduml

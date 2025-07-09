@@ -1,0 +1,238 @@
+openapi: 3.0.4
+info:
+  title: Swagger Warmhouse - OpenAPI 3.0
+  version: 0.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: https://swagger.io
+servers:
+  - url: https://localhost:8080
+tags:
+  - name: Device
+    description: Операции с устройствами
+    externalDocs:
+      description: Find out more
+      url: https://swagger.io
+paths:
+  /devices:
+    post:
+      tags:
+        - Device
+      description: "Добавление нового устройства"
+      summary: Добавление нового устройства
+      requestBody:
+        description: Добавление нового устройства
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+        required: true
+      responses:
+        "200":
+          description: "OK"
+    get:
+      tags:
+        - Device
+      summary: "Список всех устройств"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+  /devices/{id}:
+    parameters:
+      - description: номер устройства
+        in: path
+        name: id
+        required: true
+        schema:
+          type: number
+    put:
+      tags:
+        - Device
+      summary: Изменение существующего устройства.
+      parameters:
+        - description: номер устройства
+          in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      description: Изменение существующего устройства по его id.
+      requestBody:
+        description: Обновление существующего устройства
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Device'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Device'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Device not found
+        '422':
+          description: Validation exception
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /devices/{id}/values:
+    parameters:
+      - description: номер устройства
+        in: path
+        name: id
+        required: true
+        schema:
+          type: number
+    get:
+      tags:
+        - Device
+      summary: Получение состояния устройства
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeviceValue'
+    post:
+      tags:
+        - Device
+      summary: "Обновление состояния устройства"
+      requestBody:
+        required: true
+        description: Изменение значений датчиков
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/DeviceValue'
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+  /devices/{id}/execute:
+    parameters:
+      - description: номер устройства
+        in: path
+        name: id
+        required: true
+        schema:
+          type: number
+    post:
+      tags:
+        - Device
+      summary: "Выполнение команды на устройстве"
+      requestBody:
+        required: true
+        description: Содержимое команды
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/DeviceCommand'
+      responses:
+        "202":
+          description: OK
+components:
+  schemas:
+    Device:
+      required:
+        - name
+        - type
+        - location
+        - home_id
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        type:
+          type: string
+          description: type of device
+          example: "universal sensor"
+        description:
+          type: string
+          example: Kitchen universal sensor
+        location:
+          type: string
+          example: kitchen
+        home_id:
+          type: integer
+        status:
+          type: string
+          description: status of device
+          enum:
+            - active
+            - disabled
+            - unknown
+    DeviceValue:
+      type: object
+      required:
+        - value
+      properties:
+        device_id:
+          type: integer
+          example: 1
+        type:
+          type: string
+          example: temperature
+        id:
+          type: integer
+          example: 1
+        value:
+          type: number
+          example: 10.2
+        status:
+          type: string
+          example: enabled
+        unit:
+          type: string
+          example: "C"
+        updated_at:
+          type: string
+          example: "2025-06-06 10:10:10.111"
+    DeviceCommand:
+      type: object
+      required:
+        - action
+      properties:
+        action:
+          type: string
+          example: "heat"
+        value:
+          type: number
+          example: 26
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required:
+        - code
+        - message

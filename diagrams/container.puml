@@ -1,0 +1,29 @@
+@startuml
+!include <C4/C4_Container>
+
+Person(user, "Пользователь", "Использует приложение для управления умными устройствами")
+
+System_Boundary(c1, "Smart Home API"){
+    Container(api, "Smart Home API", "Go", "API для управления умными устройствами")
+    Container(remote_devices, "Remote Devices", "Go", "Датчики и исполнительные устройства")
+    Container(telemetry, "Telemetry", "Go", "Сервис телеметрии")
+    Container(scenarios, "Scenarios", "Go", "Сервис сценариев")
+}
+ContainerDb(api_db, "API DB", "PostgreSQL", "База данных для хранения данных о умных устройствах")
+ContainerDb(telemetry_db, "Telemetry DB", "PostgreSQL", "База данных для хранения телеметрии")
+
+Rel(user, api, "Просматривает данные по устройствам, добавляет и удаляет сценарии/устройства", "REST API")
+Rel(telemetry, scenarios, "Отправляет изменения в телеметрии", "message queue")
+Rel(api, telemetry, "Получает исторические данные", "JSON/HTTP")
+Rel(scenarios, remote_devices, "Отправляет команды на исполнительные устройства", "message queue")
+Rel(remote_devices, telemetry, "получение информации о добавлении и удалении устройств", "message queue")
+Rel(api, scenarios, "Получает данные о сценариях, управляет ими", "JSON/HTTP")
+Rel(telemetry, remote_devices, "Обновляет данные о состоянии устройств", "JSON/HTTP")
+Rel(user, remote_devices, "Создает, обновляет и удаляет датчики", "JSON/HTTP")
+Rel(remote_devices, api, "Регистрация  устройств", "message queue")
+
+Rel(remote_devices, api_db, "Сохраняет и получает данные", "SQL/tcp")
+Rel(api, api_db, "Сохраняет и получает данные", "SQL/tcp")
+Rel(scenarios, api_db, "Сохраняет и получает данные", "SQL/tcp")
+Rel(telemetry, telemetry_db, "Сохраняет и получает данные", "SQL/tcp")
+@enduml

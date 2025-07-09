@@ -1,0 +1,92 @@
+@startuml
+
+entity User {
+  +Int id <<PK>>
+  +String name
+  +String email
+}
+User "1" -- "0..*" House : has many
+User "1" -- "0..*" Schedule: has many
+
+class House {
+    +Int id <<PK>>
+    +Int user_id <<FK>> -> user.id
+    +String name
+    +String address
+}
+House "1" -- "0..*" Device : has many
+
+class Device {
+    +Int id <<PK>>
+    +Int house_id <<FK>> -> house.id
+    +String name
+    +String type
+    +String status
+    +String location
+    +String serial_number
+    +String description
+}
+Device "1" -- "1" DeviceParams : one
+
+class DeviceParams {
+    +Int device_id <<FK>> -> device.id
+    +String protocol
+    +String ip
+}
+
+Device "1" -- "0..*" DeviceValue : has many
+class DeviceValue {
+    +Int id <<PK>>
+    +Int device_id <<FK>> -> device.id
+    +String unit
+    +Float value
+    +Int timestamp
+}
+
+class Schedule {
+    +Int id <<PK>>
+    +Int user_id <<FK>> -> user.id
+    +Int home_id <<FK>> -> house.id
+    +String name
+    +String description
+    +String cron
+    +String status
+    +Int created_at
+    +Int updated_at
+}
+class ScheduleLog {
+    +Int id <<PK>>
+    +Int schedule_id <<FK>> -> schedule.id
+    +Int run_at
+    +String status
+}
+
+class ScheduleRule {
+    +Int id <<PK>>
+    +Int schedule_id <<FK>> -> schedule.id
+    +Int device_id <<FK>> -> device.id
+    +String rule
+    +String value
+}
+
+class ScheduleAction {
+    +Int id <<PK>>
+    +Int schedule_id <<FK>> -> schedule.id
+    +Int device_id <<FK>> -> device.id
+    +String action
+    +String value
+}
+
+class Telemetry {
+    +Int id <<PK>>
+    +Int device_value_id <<FK>> -> device_value.id
+    +String unit
+    +Float value
+    +Int timestamp
+}
+
+Schedule "1" -- "1..*" ScheduleRule : has many
+Schedule "1" -- "1..*" ScheduleAction : has many
+Schedule "1" -- "0..*" ScheduleLog : has many
+
+@enduml
