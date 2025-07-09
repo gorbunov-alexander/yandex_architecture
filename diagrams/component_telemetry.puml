@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Component>
+
+System_Boundary(c1, "Telemetry"){
+Component(telemetry_api, "Telemetry api", "Go", "Позволяет получить данные о состоянии устройств")
+Component(telemetry_worker, "Telemetry worker", "Go", "Сбор данных о состоянии устройств")
+}
+
+Component_Ext(api, "Smart Home API", "Go", "API для управления умными устройствами")
+Component_Ext(scenarios, "Scenarios", "Go", "Сервис cценариев")
+
+Component_Ext(remote_devices, "Devices", "Работа с устройствами")
+
+ComponentDb(telemetry_db, "DB", "PostgreSQL", "База данных для сохранения телеметрии")
+
+Rel(telemetry_worker, scenarios,"Получение данных о состоянии устройств", "JSON/HTTP")
+Rel(telemetry_api, telemetry_db, "Сохраняет и получает данные", "SQL/tcp")
+Rel(telemetry_worker, telemetry_db, "Сохраняет и получает данные", "SQL/tcp")
+Rel(api, telemetry_api, "Получает исторические данные", "JSON/HTTP")
+Rel(remote_devices, telemetry_worker, "Получение данных о состоянии устройств", "JSON/HTTP")
+@enduml

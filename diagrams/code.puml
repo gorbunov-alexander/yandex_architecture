@@ -1,0 +1,39 @@
+@startuml
+skinparam componentStyle rectangle
+
+package "REST API" {
+  [DeviceController]
+}
+
+package "Business Logic" {
+  [DeviceService]
+  [DeviceValueService]
+  [DeviceCommandService]
+}
+
+package "Data Layer" {
+  [DeviceRepository]
+}
+
+package "Storage" {
+  (База данных)
+}
+
+package "Utils" {
+  [ErrorService]
+}
+
+DeviceController --> DeviceService
+DeviceController --> DeviceValueService
+DeviceController --> DeviceCommandService
+
+DeviceService --> DeviceRepository
+DeviceRepository --> "База данных"
+
+DeviceValueService --> DeviceRepository
+DeviceCommandService --> DeviceRepository
+
+DeviceService --> ErrorService
+DeviceValueService --> ErrorService
+DeviceCommandService --> ErrorService
+@enduml

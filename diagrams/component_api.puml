@@ -1,0 +1,21 @@
+@startuml
+!includeurl  <C4/C4_Component>
+
+System_Boundary(c1, "Smart Home API"){
+Component(api, "Smart Home API", "Go", "API для управления умными устройствами")
+Component(repository, "repository", "логика работы с бд")
+Component(service, "service layer", "Бизнес логика")
+}
+Rel(service, repository, "Reads and writes data", "")
+Rel(api, service, "")
+
+Component_Ext(telemetry, "Telemetry", "Go", "Сервис телеметрии")
+Component_Ext(scenarios, "Scenarios", "Go", "Сервис cценариев")
+ComponentDb(api_db, "API DB", "PostgreSQL", "База данных для хранения данных о умных устройствах")
+Component_Ext(remote_devices, "Регистрация  устройств", "", "JSON/HTTP")
+
+Rel(service, scenarios, "Получает данные о сценариях, управляет ими", "JSON/HTTP")
+Rel(repository, api_db, "Сохраняет и получает данные", "SQL/tcp")
+Rel(service, telemetry, "Получает исторические данные", "JSON/HTTP")
+Rel(remote_devices, api, "Получение информации о подключении и удалении устройств", "JSON/HTTP")
+@enduml

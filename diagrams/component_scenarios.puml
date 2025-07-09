@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+
+System_Boundary(c1, "Scenarios"){
+    Component(scenarios_api, "Scenarios api", "Go", "Добавление и управление сценариями, просмотр событий")
+    Component(scenarios_worker, "Scenarios worker", "Go", "Обработка сценариев")
+}
+
+Component_Ext(telemetry_worker, "Телеметрия", "Go", "Сервис телеметрии")
+Rel(telemetry_worker, scenarios_worker, "Получение данных о состоянии устройств", "JSON/HTTP")
+
+Component_Ext(remote_devices, "Управление устройствами")
+Rel(scenarios_worker, remote_devices, "Отправка команд устройствам", "JSON/HTTP")
+
+ComponentDb_Ext(api_db, "DB", "PostgreSQL", "Сохранение данных о сценариях")
+
+Rel(scenarios_api, api_db, "Сохраняет и получает данные", "SQL/tcp")
+Rel(scenarios_worker, api_db, "Сохраняет и получает данные", "SQL/tcp")
+@enduml
